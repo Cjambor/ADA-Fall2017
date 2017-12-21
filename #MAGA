@@ -1,0 +1,31 @@
+-----Collecting Twitter Data: #MAGA-----
+
+# Connecting to Twitter using Tweepy
+
+import tweepy
+from tweepy import Stream
+from tweepy.streaming import StreamListener
+from tweepy import OAuthHandler
+import csv
+
+ckey = 'U98ZtPJTxNOLC3AnDltXOXHjw' 
+csecret = 'q90XjIUJkN52KkCZda1hVl4hXz3WmnQTRkxQdK20tNT2wO0SuZ'
+atoken = '314190901-5TJgRdQ0pDOdY5hQPc4Y9I0ZMNaAAslQAenUzpN6'
+asecret = 'AwS9n7y10DzmUNcj3P6fAATPU4bgOp3J26CsvWRSzrcFE'
+
+auth = tweepy.OAuthHandler(ckey, csecret)
+auth.set_access_token(atoken, asecret)
+api = tweepy.API(auth)
+api.wait_on_rate_limit = True
+api.wait_on_rate_limit_notify = True
+
+# Open/Create a file to append pulled Twitter data using csv.writer 
+
+with open('MAGA.csv', 'a') as csvFile:      
+    csvWriter = csv.writer(csvFile)         
+    for tweet in tweepy.Cursor(api.search, 
+                               q='#MAGA',
+                               lang= 'en', 
+                               since="2017-12-06").items():
+        print (tweet.created_at, tweet.text, tweet.user.id , tweet.user.followers_count)
+        csvWriter.writerow([tweet.created_at, tweet.text.encode('utf-8'), tweet.user.id , tweet.user.followers_count])
